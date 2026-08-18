@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 720" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect width="1100" height="720" fill="#f7f7f4"/>
+  <text x="24" y="32" font-size="18" font-weight="700" fill="#1a1a1a">orders-api  centralized egress (no peering)</text>
+  <text x="24" y="52" font-size="11" fill="#444">Region ap-southeast-1 · app-vpc 10.20.0.0/16 · egress-vpc 10.30.0.0/16 · TGW only</text>
+
+  <!-- app-vpc -->
+  <rect x="20" y="70" width="640" height="430" rx="10" fill="#fff" stroke="#2c5282" stroke-width="2"/>
+  <text x="36" y="94" font-size="14" font-weight="700" fill="#2c5282">app-vpc 10.20.0.0/16</text>
+  <text x="220" y="94" font-size="10" fill="#555">IGW: app-igw (public only)</text>
+
+  <rect x="36" y="110" width="290" height="100" rx="6" fill="#e6f4ea" stroke="#2f6f3e"/>
+  <text x="48" y="128" font-size="11" font-weight="700">public-a 10.20.1.0/24</text>
+  <text x="48" y="146" font-size="10">bastion · nginx (L7)</text>
+  <text x="48" y="164" font-size="10">RT app-public-rt</text>
+  <text x="48" y="180" font-size="10">0.0.0.0/0 ’ IGW</text>
+
+  <rect x="340" y="110" width="200" height="100" rx="6" fill="#e6f4ea" stroke="#2f6f3e"/>
+  <text x="352" y="128" font-size="11" font-weight="700">public-b 10.20.2.0/24</text>
+  <text x="352" y="146" font-size="10">empty / spare AZ</text>
+  <text x="352" y="164" font-size="10">same app-public-rt</text>
+
+  <rect x="36" y="230" width="250" height="110" rx="6" fill="#fff3cd" stroke="#b7791f"/>
+  <text x="48" y="248" font-size="11" font-weight="700">private-app-a 10.20.10.0/24</text>
+  <text x="48" y="266" font-size="10">app-a · Lambda ENI</text>
+  <text x="48" y="284" font-size="10">RT app-private-rt</text>
+  <text x="48" y="302" font-size="10">0.0.0.0/0 ’ TGW only</text>
+  <text x="48" y="318" font-size="10">no IGW, no NAT in this VPC</text>
+
+  <rect x="300" y="230" width="230" height="110" rx="6" fill="#fff3cd" stroke="#b7791f"/>
+  <text x="312" y="248" font-size="11" font-weight="700">private-app-b 10.20.11.0/24</text>
+  <text x="312" y="266" font-size="10">app-b · Lambda ENI</text>
+  <text x="312" y="284" font-size="10">same app-private-rt</text>
+  <text x="312" y="302" font-size="10">TGW attach (AZ-b)</text>
+
+  <rect x="36" y="360" width="300" height="110" rx="6" fill="#fde2e1" stroke="#c53030"/>
+  <text x="48" y="378" font-size="11" font-weight="700">private-data-a 10.20.20.0/24</text>
+  <text x="48" y="396" font-size="10">PostgreSQL</text>
+  <text x="48" y="414" font-size="10">same app-private-rt ’ TGW for patches</text>
+  <text x="48" y="432" font-size="10">SG: 5432 from app-sg id only</text>
+
+  <!-- egress-vpc -->
+  <rect x="680" y="70" width="400" height="430" rx="10" fill="#fff" stroke="#6b46c1" stroke-width="2"/>
+  <text x="696" y="94" font-size="14" font-weight="700" fill="#6b46c1">egress-vpc 10.30.0.0/16</text>
+  <text x="696" y="110" font-size="10" fill="#555">only NAT · only internet for workloads</text>
+
+  <rect x="696" y="130" width="360" height="140" rx="6" fill="#e6f4ea" stroke="#2f6f3e"/>
+  <text x="708" y="150" font-size="11" font-weight="700">egress-public-a 10.30.1.0/24</text>
+  <text x="708" y="168" font-size="10">NAT Gateway + EIP</text>
+  <text x="708" y="186" font-size="10">RT egress-public-rt</text>
+  <text x="708" y="204" font-size="10">0.0.0.0/0 ’ egress IGW</text>
+  <text x="708" y="222" font-size="10">10.20.0.0/16 ’ TGW  (return)</text>
+  <text x="708" y="248" font-size="10">NAT is here. TGW ENI is not.</text>
+
+  <rect x="696" y="290" width="360" height="140" rx="6" fill="#ebf8ff" stroke="#2b6cb0"/>
+  <text x="708" y="310" font-size="11" font-weight="700">egress-tgw-a 10.30.10.0/24</text>
+  <text x="708" y="328" font-size="10">TGW attachment (appliance mode)</text>
+  <text x="708" y="346" font-size="10">RT egress-tgw-rt</text>
+  <text x="708" y="364" font-size="10">0.0.0.0/0 ’ NAT</text>
+  <text x="708" y="390" font-size="10">Packets from app-vpc land here first.</text>
+
+  <!-- TGW -->
+  <rect x="360" y="520" width="380" height="80" rx="8" fill="#1a1a1a"/>
+  <text x="380" y="548" font-size="13" font-weight="700" fill="#fff">Transit Gateway · capstone-tgw-rt</text>
+  <text x="380" y="568" font-size="10" fill="#ddd">assoc+prop both attachments · static 0.0.0.0/0 ’ egress attach · 10.20.0.0/16 ’ app attach</text>
+  <text x="380" y="584" font-size="10" fill="#ddd">No VPC peering</text>
+
+  <!-- four paths -->
+  <rect x="20" y="615" width="1060" height="90" rx="8" fill="#fff" stroke="#888"/>
+  <text x="36" y="638" font-size="12" font-weight="700">Four traffic paths</text>
+  <text x="36" y="658" font-size="11" fill="#c53030">1 inbound: Internet ’ app IGW ’ nginx public-a ’ app :5000 (local VPC)</text>
+  <text x="36" y="674" font-size="11" fill="#c53030">2 app’DB: private-app ’ local 10.20.0.0/16 ’ private-data:5432 (app-sg only)</text>
+  <text x="36" y="690" font-size="11" fill="#2b6cb0">3 app’internet: private RT TGW ’ 0.0.0.0/0 egress attach ’ NAT ’ IGW ’ (return 10.20.0.0/16 TGW)</text>
+  <text x="560" y="658" font-size="11" fill="#6b46c1">4 Lambda’DB: ENI in private-app + app-sg ’ :5432; APIs use path 3</text>
+</svg>
